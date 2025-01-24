@@ -1,0 +1,39 @@
+<Page
+    x:Class="Client_System_C_.UserProfilePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client_System_C_"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <StackPanel x:Name="profilePanel" HorizontalAlignment="Center" Padding="20" Width="800">
+
+            <Grid>
+                <TextBlock x:Name="userHeader" FontSize="28" FontWeight="Bold" 
+                           TextAlignment="Center" Margin="0,10,0,20"/>
+
+                <AppBarButton Icon="Edit" Click="EditProfileButton_Click"
+                              HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Margin="0,10,10,0" ToolTipService.ToolTip="Editar Perfil" 
+                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                              Width="75" Height="50"
+                />
+            </Grid>
+
+            <TextBlock x:Name="userInfo" FontSize="20" TextAlignment="Center" Margin="0,0,0,20"/>
+            <TextBlock Text="Histórico de Compras" FontSize="22" FontWeight="Bold" Margin="0,20,0,10"/>
+
+            <ScrollViewer x:Name="historyScroll" Height="300" VerticalScrollBarVisibility="Auto" 
+                          Background="{ThemeResource SystemBaseLowColor}" CornerRadius="10">
+                <StackPanel x:Name="purchaseListPanel"/>
+            </ScrollViewer>
+            
+            <Button Content="Adicionar Nova Compra" Click="NewPurchaseButton_Click"
+                    Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+        </StackPanel>
+    </Grid>
+
+</Page>

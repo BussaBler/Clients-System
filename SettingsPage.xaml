@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page 
+    x:Class="Client_System_C_.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client_System_C_"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <StackPanel HorizontalAlignment="Center" Padding="20" Width="400">
+        <TextBlock Text="Configurações de Impressão" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,10"/>
+
+        <!-- Text fields for user inputs -->
+        <TextBox x:Name="cellPhoneBox" Header="Celular" PlaceholderText="Digite o celular" Margin="0,10,0,5" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
+        <TextBox x:Name="phoneBox" Header="Telefone" PlaceholderText="Digite o telefone" Margin="0,10,0,5" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
+        <TextBox x:Name="budgetDeadlineBox" Header="Prazo de Orçamento" PlaceholderText="Digite o prazo" Margin="0,10,0,10"/>
+
+        <!-- Save Button -->
+        <Button Content="Salvar Configuração" Click="SaveSettings_Click" 
+                Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Center" Margin="20,10,0,0"/>
+    </StackPanel>
+</Page>

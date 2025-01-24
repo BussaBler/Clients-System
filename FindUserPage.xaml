@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Client_System_C_.FindUserPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client_System_C_"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Background="{ThemeResource SystemBaseLowColor}" Padding="20" CornerRadius="12">
+        <TextBlock Text="Buscar Cliente" FontSize="24" FontWeight="Bold" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" TextAlignment="Center"/>
+
+        <RadioButtons x:Name="idTypeFindRadioButtons" SelectionChanged="idTypeFindRadioButtons_SelectionChanged" SelectedIndex="0">
+            <RadioButton Content="CPF" IsChecked="True"/>
+            <RadioButton Content="CNPJ"/>
+        </RadioButtons>
+
+        <TextBox x:Name="userCPF" InputScope="Number" Margin="0, 5, 0, 12" Width="300" ui:TextBoxExtensions.Mask="999.999.999-99"/>
+        <TextBox x:Name="userCNPJ" InputScope="Number" Margin="0, 5, 0, 12" Width="300" ui:TextBoxExtensions.Mask="99.999.999/9999-99" Visibility="Collapsed"/>
+
+        <TextBlock Text="OU" FontSize="18" FontWeight="Bold" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" Margin="0,10,0,0" TextAlignment="Center"/>
+        <TextBox x:Name="userLastName" Margin="0,5,0,12" Width="300" Header="Sobrenome"/>
+        <TextBlock Text="OU" FontSize="18" FontWeight="Bold" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" Margin="0,10,0,0" TextAlignment="Center"/>
+        <TextBox x:Name="userPhone" Margin="0,5,0,12" Width="300" Header="Celular/Telefone" ui:TextBoxExtensions.Mask="(99) 99999-9999" />
+
+        <Button Content="Buscar Cliente" Click="FindButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Center"/>
+    </StackPanel>
+</Page>
