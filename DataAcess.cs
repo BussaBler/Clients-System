@@ -37,7 +37,7 @@ namespace Client_System_C_
                     lastName TEXT,
                     email TEXT,
                     cep TEXT,
-                    adress TEXT
+                    address TEXT
                 );
             ";
 
@@ -114,11 +114,11 @@ namespace Client_System_C_
         /// <summary>
         /// Insert a new user record into the 'Users' table.
         /// </summary>
-        public static void InsertUser(string cpf, string firstName, string lastName, string email, string phone, string cep, string adress)
+        public static void InsertUser(string cpf, string firstName, string lastName, string email, string phone, string cep, string address)
         {
             string sql = @"
-                INSERT INTO Users (cpf, firstName, lastName, email, phone, cep, adress) 
-                VALUES (@cpf, @firstName, @lastName, @email, @phone, @cep, @adress);
+                INSERT INTO Users (cpf, firstName, lastName, email, phone, cep, address) 
+                VALUES (@cpf, @firstName, @lastName, @email, @phone, @cep, @address);
             ";
 
             using var cmd = new SqliteCommand(sql, db);
@@ -128,7 +128,7 @@ namespace Client_System_C_
             cmd.Parameters.AddWithValue("@email", email);
             cmd.Parameters.AddWithValue("@phone", phone);
             cmd.Parameters.AddWithValue("@cep", cep);
-            cmd.Parameters.AddWithValue("@adress", adress);
+            cmd.Parameters.AddWithValue("@address", address);
 
             cmd.ExecuteNonQuery();
         }
@@ -266,7 +266,7 @@ namespace Client_System_C_
 
         public static User? GetUser(string cpf)
         {
-            string sql = "SELECT cpf, firstName, lastName, email, phone, cep, adress FROM Users WHERE cpf = @cpf LIMIT 1;";
+            string sql = "SELECT cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE cpf = @cpf LIMIT 1;";
             using var cmd = new SqliteCommand(sql, db);
             cmd.Parameters.AddWithValue("@cpf", cpf);
 
@@ -301,7 +301,7 @@ namespace Client_System_C_
 
         public static User? GetUserByLastName(string lastName)
         {
-            string sql = "SELECT cpf, firstName, lastName, email, phone, cep, adress FROM Users WHERE lastName = @lastName LIMIT 1;";
+            string sql = @"SELECT cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE lastName = @lastName LIMIT 1;";
             using var cmd = new SqliteCommand(sql, db);
             cmd.Parameters.AddWithValue("@lastName", lastName);
 
@@ -336,7 +336,7 @@ namespace Client_System_C_
 
         public static User? GetUserByPhone(string phone)
         {
-            string sql = "SELECT cpf, firstName, lastName, email, phone, cep, adress FROM Users WHERE phone = @phone LIMIT 1;";
+            string sql = "SELECT cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE phone = @phone LIMIT 1;";
             using var cmd = new SqliteCommand(sql, db);
             cmd.Parameters.AddWithValue("@phone", phone);
 

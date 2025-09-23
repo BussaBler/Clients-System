@@ -13,7 +13,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" Height="500">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Background="{ThemeResource SystemBaseLowColor}" Padding="20" CornerRadius="12">
             <TextBlock Text="Adicionar Cliente" FontSize="24" FontWeight="Bold" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" TextAlignment="Center"/>
-            <RadioButtons x:Name="idTypeRadioButtons" SelectionChanged="RadioButtons_SelectionChanged" SelectedIndex="0">
+            <RadioButtons x:Name="idTypeRadioButtons" SelectionChanged="IdRadioButtons_SelectionChanged" SelectedIndex="0">
                 <RadioButton Content="CPF" IsChecked="True"/>
                 <RadioButton Content="CNPJ"/>
             </RadioButtons>
@@ -22,7 +22,12 @@
             <TextBox x:Name="firstNameBox" Margin="0, 5, 0, 12" Header="Nome"/>
             <TextBox x:Name="lastNameBox" Margin="0, 5, 0, 12" Header="Sobrenome"/>
             <TextBox x:Name="emailBox" Margin="0, 5, 0, 12" Header="Email" ui:TextBoxExtensions.Regex="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$"/>
-            <TextBox x:Name="phoneBox" Margin="0, 5, 0, 12" Header="Celular/Telefone" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
+            <RadioButtons x:Name="phoneTypeRadioButtons" SelectionChanged="PhoneRadioButtons_SelectionChanged" SelectedIndex="0">
+                <RadioButton Content="Celular" IsChecked="True"/>
+                <RadioButton Content="Telefone Fixo"/>
+            </RadioButtons>
+            <TextBox x:Name="cellphoneBox" Margin="0, 5, 0, 12" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
+            <TextBox x:Name="telephoneBox" Margin="0, 5, 0, 12" ui:TextBoxExtensions.Mask="(99) 9999-9999" Visibility="Collapsed"/>
             <TextBox x:Name="cepBox" Margin="0,5,0,12" Header="CEP" InputScope="Number" ui:TextBoxExtensions.Mask="99999-999" TextChanged="CepBox_TextChanged"/>
 
             <StackPanel Orientation="Vertical">

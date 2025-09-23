@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.UI;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -37,21 +39,32 @@ namespace Client_System_C_
 
             foreach (var machine in sortedMachines)
             {
-                var machinePanel = new StackPanel
+                var machineButton = new Button
                 {
                     Margin = new Thickness(10),
-                    Padding = new Thickness(10),
-                    CornerRadius = new CornerRadius(8),
+                    Padding = new Thickness(0),
                     Background = new SolidColorBrush((Color)App.Current.Resources["SystemBaseMediumColor"]),
+                    BorderThickness = new Thickness(0),
+                    CornerRadius = new CornerRadius(8),
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    HorizontalContentAlignment = HorizontalAlignment.Left,
+                    Tag = machine
+                };
+                machineButton.Click += MachineButton_Clicked;
+
+                var contentPanel = new StackPanel
+                {
+                    Margin = new Thickness(10)
                 };
 
                 var machineHeader = new TextBlock
                 {
                     Text = $"{machine.MachineModel} (ID: {machine.MachineId})",
                     FontSize = 20,
-                    FontWeight = Microsoft.UI.Text.FontWeights.Bold
+                    FontWeight = FontWeights.Bold,
+                    Foreground = new SolidColorBrush(Colors.Black),
                 };
-                machinePanel.Children.Add(machineHeader);
+                contentPanel.Children.Add(machineHeader);
 
                 var machineDetails = new List<string>
                 {
@@ -66,9 +79,19 @@ namespace Client_System_C_
                     FontSize = 16,
                     Margin = new Thickness(0, 5, 0, 0)
                 };
-                machinePanel.Children.Add(detailsText);
+                contentPanel.Children.Add(detailsText);
 
-                machineListPanel.Children.Add(machinePanel);
+                machineButton.Content = contentPanel;
+                machineListPanel.Children.Add(machineButton);
+            }
+        }
+
+        private void MachineButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            if (button?.Tag is DataAcess.Machine machine)
+            {
+                Frame.Navigate(typeof(MachineProfilePage), machine.MachineId);
             }
         }
     }

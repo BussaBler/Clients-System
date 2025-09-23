@@ -16,8 +16,18 @@
         <TextBox x:Name="machineIdBox" Header="Identificação da Máquina" Margin="0,5,0,12" InputScope="Number"/>
         <TextBox x:Name="machineModelBox" Header="Modelo" Margin="0,5,0,12"/>
         <TextBox x:Name="ownerNameBox" Header="Proprietário" Margin="0,5,0,12"/>
-        <TextBox x:Name="ownerPhoneBox" Header="Celular/Telefone" Margin="0,5,0,12" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
-        <TextBox x:Name="ownerPhoneBox2" Header="Celular/Telefone" Margin="0,5,0,12" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
+        <RadioButtons x:Name="ownerPhoneTypeRadioButtons" SelectionChanged="OwnerPhoneTypeRadioButtons_SelectionChanged" SelectedIndex="0">
+            <RadioButton Content="Celular" IsChecked="True"/>
+            <RadioButton Content="Telefone Fixo"/>
+        </RadioButtons>
+        <TextBox x:Name="ownerCellphoneBox" Margin="0,5,0,12" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
+        <TextBox x:Name="ownerTelephoneBox" Margin="0,5,0,12" ui:TextBoxExtensions.Mask="(99) 9999-9999" Visibility="Collapsed"/>
+        <RadioButtons x:Name="ownerPhoneTypeRadioButtons2" SelectionChanged="OwnerPhoneTypeRadioButtons_SelectionChanged" SelectedIndex="0">
+            <RadioButton Content="Celular" IsChecked="True"/>
+            <RadioButton Content="Telefone Fixo"/>
+        </RadioButtons>
+        <TextBox x:Name="ownerCellphoneBox2" Margin="0,5,0,12" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
+        <TextBox x:Name="ownerTelephoneBox2" Margin="0,5,0,12" ui:TextBoxExtensions.Mask="(99) 9999-9999" Visibility="Collapsed"/>
 
         <Button Content="Adicionar Máquina" Click="AddButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Center"/>
     </StackPanel>

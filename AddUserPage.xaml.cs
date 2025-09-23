@@ -35,6 +35,7 @@ namespace Client_System_C_
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             string idNumber;
+            string phoneNumber = string.Empty;
 
             if (idTypeRadioButtons.SelectedIndex == 0)
             {
@@ -55,10 +56,23 @@ namespace Client_System_C_
                 lastNameBox.Focus(FocusState.Keyboard);
                 return;
             }
-            if (string.IsNullOrEmpty(phoneBox.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim()))
+            if (phoneTypeRadioButtons.SelectedIndex == 0)
             {
-                phoneBox.Focus(FocusState.Keyboard);
-                return;
+                if (string.IsNullOrEmpty(cellphoneBox.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim()))
+                {
+                    cellphoneBox.Focus(FocusState.Keyboard);
+                    return;
+                }
+                phoneNumber = cellphoneBox.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim();
+            }
+            else if (phoneTypeRadioButtons.SelectedIndex == 1)
+            {
+                if (string.IsNullOrEmpty(telephoneBox.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim()))
+                {
+                    telephoneBox.Focus(FocusState.Keyboard);
+                    return;
+                }
+                phoneNumber = telephoneBox.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim();
             }
 
             DataAcess.InsertUser(
@@ -66,16 +80,16 @@ namespace Client_System_C_
                 firstNameBox.Text,
                 lastNameBox.Text,
                 emailBox.Text,
-                phoneBox.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim(),
+                phoneNumber,
                 cepBox.Text.Replace("-", "").Trim(),
                 string.Join(",", [streetBox.Text, adressNumber.Text, neighborhoodBox.Text, cityBox.Text])
             );
 
-            string idToLoad = string.IsNullOrEmpty(idNumber.Replace("_", "").Replace("-", "")) ? phoneBox.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim() : idNumber;
+            string idToLoad = string.IsNullOrEmpty(idNumber.Replace(".", "").Replace("-", "").Replace("_", "").Replace("/", "").Trim()) ? phoneNumber : idNumber;
             MainPage.Current?.ContentFrame.Navigate(typeof(UserProfilePage), idToLoad);
         }
 
-        private void RadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void IdRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (idTypeRadioButtons.SelectedIndex == 0)
             {
@@ -90,7 +104,23 @@ namespace Client_System_C_
                 cnpjBox.Visibility = Visibility.Visible;
             }
         }
-    
+
+        private void PhoneRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (phoneTypeRadioButtons.SelectedIndex == 0)
+            {
+                cellphoneBox.Visibility = Visibility.Visible;
+                telephoneBox.Visibility = Visibility.Collapsed;
+                telephoneBox.Text = string.Empty;
+            }
+            if (phoneTypeRadioButtons.SelectedIndex == 1)
+            {
+                cellphoneBox.Visibility = Visibility.Collapsed;
+                cellphoneBox.Text = string.Empty;
+                telephoneBox.Visibility = Visibility.Visible;
+            }
+        }
+
         private async void CepBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string cep = cepBox.Text.Replace("-", "").Replace("_", "").Trim();

@@ -1,19 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Microsoft.UI;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Text;
-using Microsoft.UI;
 using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -35,6 +26,8 @@ namespace Client_System_C_
         private void LoadUsers()
         {
             var users = DataAcess.GetAllUsers();
+            clientListPanel.Children.Clear(); // optional: clear old entries
+
             if (users.Count == 0)
             {
                 clientListPanel.Children.Add(new TextBlock
@@ -48,38 +41,59 @@ namespace Client_System_C_
             }
 
             var sortedUsers = users.OrderBy(u => u.FirstName).ThenBy(u => u.LastName);
+
             foreach (var user in sortedUsers)
             {
-                var userPanel = new StackPanel
+                var userButton = new Button
                 {
                     Margin = new Thickness(10),
-                    Padding = new Thickness(10),
+                    Padding = new Thickness(0),
                     Background = new SolidColorBrush((Color)App.Current.Resources["SystemBaseMediumColor"]),
-                    CornerRadius = new CornerRadius(8)
+                    BorderThickness = new Thickness(0),
+                    CornerRadius = new CornerRadius(8),
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    HorizontalContentAlignment = HorizontalAlignment.Left,
+                    Tag = user
+                };
+                userButton.Click += UserButton_Clicked;
+
+                var contentPanel = new StackPanel
+                {
+                    Margin = new Thickness(10),
                 };
 
-                userPanel.Children.Add(new TextBlock
+                contentPanel.Children.Add(new TextBlock
                 {
                     Text = $"{user.FirstName} {user.LastName}",
                     FontSize = 20,
                     FontWeight = FontWeights.Bold,
-                    Foreground = new SolidColorBrush(Colors.Black)
+                    Foreground = new SolidColorBrush(Colors.Black),
                 });
 
                 var details = new List<string> { $"CPF/CNPJ: {user.CPF}" };
                 if (!string.IsNullOrEmpty(user.Email)) details.Add($"Email: {user.Email}");
                 if (!string.IsNullOrEmpty(user.Phone)) details.Add($"Celular/Telefone: {user.Phone}");
 
-                var detailsText = new TextBlock
+                contentPanel.Children.Add(new TextBlock
                 {
                     Text = string.Join("\n", details),
                     FontSize = 16,
                     Foreground = new SolidColorBrush(Colors.Black),
                     Margin = new Thickness(0, 5, 0, 0)
-                };
-                userPanel.Children.Add(detailsText);
+                });
 
-                clientListPanel.Children.Add(userPanel);
+                userButton.Content = contentPanel;
+                clientListPanel.Children.Add(userButton);
+            }
+        }
+
+        private void UserButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            if (button?.Tag is DataAcess.User user)
+            {
+                string idToLoad = string.IsNullOrEmpty(user.CPF.Replace(".", "").Replace("-", "").Replace("_", "").Replace("/", "").Trim()) ? user.Phone : user.CPF;
+                Frame.Navigate(typeof(UserProfilePage), idToLoad);
             }
         }
     }

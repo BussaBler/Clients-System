@@ -31,17 +31,28 @@ namespace Client_System_C_
         private async void FindButton_Click(object sender, RoutedEventArgs e)
         {
             string maskedId = string.Empty;
+            string maskedPhone = string.Empty;
 
             if (idTypeFindRadioButtons.SelectedIndex == 0)
             {
                 maskedId = userCPF.Text.Trim();
             }
-            if (idTypeFindRadioButtons.SelectedIndex == 1)
+            else if (idTypeFindRadioButtons.SelectedIndex == 1)
             {
                 maskedId = userCNPJ.Text.Trim();
             }
-
             string id = maskedId.Replace(".", "").Replace("-", "").Replace("_", "").Replace("/", "").Trim();
+
+            if (phoneTypeFindRadioButtons.SelectedIndex == 0)
+            {
+                maskedPhone = userCellphone.Text.Trim();
+            }
+            else if (phoneTypeFindRadioButtons.SelectedIndex == 1)
+            {
+                maskedPhone = userTelephone.Text.Trim();
+            }
+            string phone = maskedPhone.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim();
+
             DataAcess.User? user = null;
 
             if (!string.IsNullOrEmpty(id))
@@ -51,9 +62,9 @@ namespace Client_System_C_
             else if (!string.IsNullOrEmpty(userLastName.Text.Trim()))
             {
                 user = DataAcess.GetUserByLastName(userLastName.Text.Trim());
-            } else if (!string.IsNullOrEmpty(userPhone.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim()))
+            } else if (!string.IsNullOrEmpty(phone))
             {
-                user = DataAcess.GetUserByPhone(userPhone.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace("_", "").Trim());
+                user = DataAcess.GetUserByPhone(phone);
             }
 
             if (user == null)
@@ -70,11 +81,11 @@ namespace Client_System_C_
                 return;
             }
 
-            string idToLoad = string.IsNullOrEmpty(user.CPF.Replace("_", "").Replace("-", "")) ? user.Phone : user.CPF;
+            string idToLoad = string.IsNullOrEmpty(user.CPF.Replace(".", "").Replace("-", "").Replace("_", "").Replace("/", "").Trim()) ? user.Phone : user.CPF;
             MainPage.Current?.ContentFrame.Navigate(typeof(UserProfilePage), idToLoad);
         }
 
-        private void idTypeFindRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void IdTypeFindRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (idTypeFindRadioButtons.SelectedIndex == 0)
             {
@@ -87,6 +98,22 @@ namespace Client_System_C_
                 userCPF.Visibility = Visibility.Collapsed;
                 userCPF.Text = string.Empty;
                 userCNPJ.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void PhoneTypeFindRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (phoneTypeFindRadioButtons.SelectedIndex == 0)
+            {
+                userCellphone.Visibility = Visibility.Visible;
+                userTelephone.Visibility = Visibility.Collapsed;
+                userTelephone.Text = string.Empty;
+            }
+            else
+            {
+                userCellphone.Visibility = Visibility.Collapsed;
+                userCellphone.Text = string.Empty;
+                userTelephone.Visibility = Visibility.Visible;
             }
         }
     }

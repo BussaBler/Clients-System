@@ -244,5 +244,12 @@ namespace Client_System_C_
                 LoadUserProfile(currentId);
             }
         }
+        private void ReturnButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+            }
+        }
     }
 }

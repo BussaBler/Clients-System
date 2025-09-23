@@ -106,7 +106,7 @@ namespace Client_System_C_
                 string done = repair.Done ? "Sim" : "Não";
                 var repairHeader = new TextBlock
                 {
-                    Text = $"Reparo em {repair.Date}, Custo: R${repair.Price:F2} Concluído: {done}",
+                    Text = $"Reparo em {repair.Date}, Custo: R${repair.Price:F2}, Concluído: {done}",
                     FontSize = 20,
                     FontWeight = Microsoft.UI.Text.FontWeights.Bold
                 };
@@ -375,6 +375,14 @@ namespace Client_System_C_
                     };
                     await noPrintingDialog.ShowAsync();
                 });
+            }
+        }
+
+        private void ReturnButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
             }
         }
     }

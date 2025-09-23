@@ -13,7 +13,7 @@
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Background="{ThemeResource SystemBaseLowColor}" Padding="20" CornerRadius="12">
         <TextBlock Text="Buscar Cliente" FontSize="24" FontWeight="Bold" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" TextAlignment="Center"/>
 
-        <RadioButtons x:Name="idTypeFindRadioButtons" SelectionChanged="idTypeFindRadioButtons_SelectionChanged" SelectedIndex="0">
+        <RadioButtons x:Name="idTypeFindRadioButtons" SelectionChanged="IdTypeFindRadioButtons_SelectionChanged" SelectedIndex="0">
             <RadioButton Content="CPF" IsChecked="True"/>
             <RadioButton Content="CNPJ"/>
         </RadioButtons>
@@ -24,7 +24,12 @@
         <TextBlock Text="OU" FontSize="18" FontWeight="Bold" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" Margin="0,10,0,0" TextAlignment="Center"/>
         <TextBox x:Name="userLastName" Margin="0,5,0,12" Width="300" Header="Sobrenome"/>
         <TextBlock Text="OU" FontSize="18" FontWeight="Bold" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" Margin="0,10,0,0" TextAlignment="Center"/>
-        <TextBox x:Name="userPhone" Margin="0,5,0,12" Width="300" Header="Celular/Telefone" ui:TextBoxExtensions.Mask="(99) 99999-9999" />
+        <RadioButtons x:Name="phoneTypeFindRadioButtons" SelectionChanged="PhoneTypeFindRadioButtons_SelectionChanged" SelectedIndex="0">
+            <RadioButton Content="Celular" IsChecked="True"/>
+            <RadioButton Content="Telefone Fixo"/>
+        </RadioButtons>
+        <TextBox x:Name="userCellphone" Margin="0,5,0,12" Width="300" ui:TextBoxExtensions.Mask="(99) 99999-9999" />
+        <TextBox x:Name="userTelephone" Margin="0,5,0,12" Width="300" ui:TextBoxExtensions.Mask="(99) 9999-9999" Visibility="Collapsed"/>
 
         <Button Content="Buscar Cliente" Click="FindButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Center"/>
     </StackPanel>
