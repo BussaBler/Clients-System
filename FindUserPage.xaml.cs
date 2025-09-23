@@ -30,18 +30,18 @@ namespace Client_System_C_
 
         private async void FindButton_Click(object sender, RoutedEventArgs e)
         {
-            string maskedId = string.Empty;
+            string maskedCpf = string.Empty;
             string maskedPhone = string.Empty;
 
             if (idTypeFindRadioButtons.SelectedIndex == 0)
             {
-                maskedId = userCPF.Text.Trim();
+                maskedCpf = userCPF.Text.Trim();
             }
             else if (idTypeFindRadioButtons.SelectedIndex == 1)
             {
-                maskedId = userCNPJ.Text.Trim();
+                maskedCpf = userCNPJ.Text.Trim();
             }
-            string id = maskedId.Replace(".", "").Replace("-", "").Replace("_", "").Replace("/", "").Trim();
+            string id = maskedCpf.Replace(".", "").Replace("-", "").Replace("_", "").Replace("/", "").Trim();
 
             if (phoneTypeFindRadioButtons.SelectedIndex == 0)
             {
@@ -57,7 +57,7 @@ namespace Client_System_C_
 
             if (!string.IsNullOrEmpty(id))
             {
-                user = DataAcess.GetUser(maskedId);
+                user = DataAcess.GetUserByCpf(maskedCpf);
             }
             else if (!string.IsNullOrEmpty(userLastName.Text.Trim()))
             {

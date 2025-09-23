@@ -38,7 +38,7 @@ namespace Client_System_C_
                 return;
             }
 
-            var machine = DataAcess.GetMachine(machineId);
+            var machine = DataAcess.GetMachineById(machineId);
 
             if (machine == null)
             {

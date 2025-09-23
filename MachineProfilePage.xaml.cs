@@ -16,7 +16,7 @@ namespace Client_System_C_
 {
     public sealed partial class MachineProfilePage : Page
     {
-        private string? currentMachineId;
+        private int currentInternalId;
         private PrintDocument printDoc;
         private IPrintDocumentSource printDocSource;
         private StackPanel printContent;
@@ -50,13 +50,13 @@ namespace Client_System_C_
             }
         }
 
-        private void LoadMachineProfile(string machineId)
+        private void LoadMachineProfile(int internalId)
         {
-            var machine = DataAcess.GetMachine(machineId);
+            var machine = DataAcess.GetMachine(internalId);
             if (machine == null) return;
             Debug.WriteLine("Machine loaded successfully!");
 
-            currentMachineId = machineId;
+            currentInternalId = machine.InternalId;
 
             machineHeader.Text = $"{machine.MachineModel} (ID: {machine.MachineId})";
 
@@ -70,13 +70,36 @@ namespace Client_System_C_
 
             machineInfo.Text = machineInfoText.Count > 0 ? string.Join("  |  ", machineInfoText) : "Sem informações adicionais";
 
-            LoadRepairHistory(machineId);
+            LoadRepairHistory(internalId);
         }
 
-        private void LoadRepairHistory(string machineId)
+        private void LoadMachineProfile(string machineId)
+        {
+            var machine = DataAcess.GetMachineById(machineId);
+            if (machine == null) return;
+            Debug.WriteLine("Machine loaded successfully!");
+
+            currentInternalId = machine.InternalId;
+
+            machineHeader.Text = $"{machine.MachineModel} (ID: {machine.MachineId})";
+
+            var machineInfoText = new List<string>();
+            if (!string.IsNullOrWhiteSpace(machine.OwnerName))
+                machineInfoText.Add($"Proprietário: {machine.OwnerName}");
+            if (!string.IsNullOrWhiteSpace(machine.OwnerPhone))
+                machineInfoText.Add($"Celular/Telefone: {machine.OwnerPhone}");
+            if (!string.IsNullOrWhiteSpace(machine.OwnerPhone2))
+                machineInfoText.Add($"Celular/Telefone: {machine.OwnerPhone2}");
+
+            machineInfo.Text = machineInfoText.Count > 0 ? string.Join("  |  ", machineInfoText) : "Sem informações adicionais";
+
+            LoadRepairHistory(currentInternalId);
+        }
+
+        private void LoadRepairHistory(int internalId)
         {
             repairListPanel.Children.Clear();
-            var repairs = DataAcess.GetRepairsFromMachine(machineId);
+            var repairs = DataAcess.GetRepairsFromMachine(internalId);
 
             if (repairs.Count == 0)
             {
@@ -131,7 +154,7 @@ namespace Client_System_C_
                     HorizontalAlignment = HorizontalAlignment.Right,
                     VerticalAlignment = VerticalAlignment.Center
                 };
-                editButton.Click += (s, e) => EditRepairButton_Click(repair.RepairId.ToString(), repair.Description, repair.Price);
+                editButton.Click += (s, e) => EditRepairButton_Click(repair.RepairId, repair.Description, repair.Price);
 
                 Grid.SetColumn(editButton, 1);
                 repairPanel.Children.Add(editButton);
@@ -142,7 +165,7 @@ namespace Client_System_C_
 
         private async void EditProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            var machine = DataAcess.GetMachine(currentMachineId);
+            var machine = DataAcess.GetMachine(currentInternalId);
             if (machine == null) return;
 
             var dialog = new ContentDialog
@@ -171,17 +194,17 @@ namespace Client_System_C_
             if (result == ContentDialogResult.Primary)
             {
                 DataAcess.UpdateMachine(
-                    currentMachineId,
+                    currentInternalId,
                     machineModelBox.Text,
                     ownerNameBox.Text,
                     ownerPhoneBox.Text,
                     ownerPhoneBox2.Text
                 );
-                LoadMachineProfile(currentMachineId);
+                LoadMachineProfile(currentInternalId);
             }
         }
 
-        private async void EditRepairButton_Click(string repairId, string description, double price)
+        private async void EditRepairButton_Click(int repairId, string description, double price)
         {
             var dialog = new ContentDialog
             {
@@ -207,7 +230,7 @@ namespace Client_System_C_
             if (result == ContentDialogResult.Primary)
             {
                 DataAcess.UpdateRepair(repairId, descriptionBox.Text, (bool)doneCheckBox.IsChecked);
-                LoadRepairHistory(currentMachineId);
+                LoadRepairHistory(currentInternalId);
             }
         }
 
@@ -234,14 +257,14 @@ namespace Client_System_C_
 
             if (result == ContentDialogResult.Primary)
             {
-                DataAcess.InsertRepair(currentMachineId, descriptionBox.Text, priceBox.Value, DateTime.Now.ToString("dd/MM/yyyy"));
-                LoadRepairHistory(currentMachineId);
+                DataAcess.InsertRepair(currentInternalId, descriptionBox.Text, priceBox.Value, DateTime.Now.ToString("dd/MM/yyyy"));
+                LoadRepairHistory(currentInternalId);
             }
         }
 
         private async void PrintProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            var repairs = DataAcess.GetRepairsFromMachine(currentMachineId);
+            var repairs = DataAcess.GetRepairsFromMachine(currentInternalId);
             Repair? selectedRepair = null;
 
             if (repairs.Count > 0)
@@ -309,7 +332,7 @@ namespace Client_System_C_
             });
 
             panel.Children.Add(new TextBlock { Text = $"Modelo: {machineHeader.Text}", FontSize = 18, Foreground = new SolidColorBrush(Colors.Black) });
-            panel.Children.Add(new TextBlock { Text = $"ID: {currentMachineId}", FontSize = 18, Foreground = new SolidColorBrush(Colors.Black) });
+            panel.Children.Add(new TextBlock { Text = $"ID: {currentInternalId}", FontSize = 18, Foreground = new SolidColorBrush(Colors.Black) });
 
             panel.Children.Add(new TextBlock
             {

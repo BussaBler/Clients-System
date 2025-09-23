@@ -9,8 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <StackPanel x:Name="profilePanel" HorizontalAlignment="Center" Padding="20" Width="800">
-
+        <StackPanel x:Name="profilePanel" HorizontalAlignment="Center" Padding="20" Width="1000">
             <Grid>
                 <TextBlock x:Name="userHeader" FontSize="28" FontWeight="Bold" 
                            TextAlignment="Center" Margin="0,10,0,20"
@@ -29,11 +28,11 @@
                 />
             </Grid>
 
-            <TextBlock x:Name="userInfo" FontSize="20" TextAlignment="Center" Margin="0,0,0,20"/>
-            <TextBlock Text="Histórico de Compras" FontSize="22" FontWeight="Bold" Margin="0,20,0,10"/>
+            <TextBlock x:Name="userInfo" FontSize="21" TextAlignment="Center" Margin="0,0,0,20"/>
+            <TextBlock Text="Histórico de Compras" FontSize="22" FontWeight="Bold" Margin="0,20,0,10" Width="800"/>
 
-            <ScrollViewer x:Name="historyScroll" Height="300" VerticalScrollBarVisibility="Auto" 
-                          Background="{ThemeResource SystemBaseLowColor}" CornerRadius="10">
+            <ScrollViewer x:Name="historyScroll" Height="350" VerticalScrollBarVisibility="Auto" 
+                          Background="{ThemeResource SystemBaseLowColor}" CornerRadius="10" Width="800">
                 <StackPanel x:Name="purchaseListPanel"/>
             </ScrollViewer>
 

@@ -31,25 +31,24 @@ namespace Client_System_C_
 
         private async void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
-            string maskedId = string.Empty;
+            string maskedCpf = string.Empty;
 
             if (idTypeFindRadioButtons.SelectedIndex == 0)
             {
-                Debug.WriteLine("Remove CPF");
-                maskedId = removeCPF.Text.Trim();
+                maskedCpf = removeCPF.Text.Trim();
             }
             if (idTypeFindRadioButtons.SelectedIndex == 1)
             {
-                maskedId = removeCNPJ.Text.Trim();
+                maskedCpf = removeCNPJ.Text.Trim();
             }
 
-            var user = DataAcess.GetUser(maskedId);
+            var user = DataAcess.GetUserByCpf(maskedCpf);
             if (user == null)
             {
                 var dialog = new ContentDialog
                 {
                     Title = "Cliente não encontrado",
-                    Content = $"Nenhum cliente encontrado com o CPF/CNPJ {maskedId}.",
+                    Content = $"Nenhum cliente encontrado com o CPF/CNPJ {maskedCpf}.",
                     CloseButtonText = "OK",
                     XamlRoot = this.Content.XamlRoot,
                     Background = (Brush)App.Current.Resources["SystemFillColorCriticalBackgroundBrush"]
@@ -59,12 +58,12 @@ namespace Client_System_C_
             }
 
             removeCPF.Text = string.Empty;
-            DataAcess.RemoveUser(maskedId);
+            DataAcess.RemoveUser(user.InternalId);
 
             var successDialog = new ContentDialog
             {
                 Title = "Cliente removido",
-                Content = $"Cliente com CPF/CNPJ {maskedId} foi removido.",
+                Content = $"Cliente com CPF/CNPJ {maskedCpf} foi removido.",
                 CloseButtonText = "OK",
                 XamlRoot = this.Content.XamlRoot,
                 Background = (Brush)App.Current.Resources["SystemFillColorSuccessBackgroundBrush"]
@@ -72,7 +71,7 @@ namespace Client_System_C_
             await successDialog.ShowAsync();
         }
 
-        private void idTypeFindRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void IdTypeFindRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (idTypeFindRadioButtons.SelectedIndex == 0)
             {

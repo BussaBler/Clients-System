@@ -21,7 +21,7 @@ namespace Client_System_C_
                 return;
             }
 
-            var machine = DataAcess.GetMachine(machineId);
+            var machine = DataAcess.GetMachineById(machineId);
             if (machine == null)
             {
                 var dialog = new ContentDialog
@@ -36,7 +36,7 @@ namespace Client_System_C_
                 return;
             }
 
-            DataAcess.RemoveMachine(machineId);
+            DataAcess.RemoveMachine(machine.InternalId);
 
             var successDialog = new ContentDialog
             {

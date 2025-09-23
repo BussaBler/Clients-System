@@ -12,7 +12,7 @@
 
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Background="{ThemeResource SystemBaseLowColor}" Padding="20" CornerRadius="12">
         <TextBlock Text="Remover Cliente" FontSize="24" FontWeight="Bold" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" TextAlignment="Center"/>
-        <RadioButtons x:Name="idTypeFindRadioButtons" SelectionChanged="idTypeFindRadioButtons_SelectionChanged" SelectedIndex="0">
+        <RadioButtons x:Name="idTypeFindRadioButtons" SelectionChanged="IdTypeFindRadioButtons_SelectionChanged" SelectedIndex="0">
             <RadioButton Content="CPF" IsChecked="True"/>
             <RadioButton Content="CNPJ"/>
         </RadioButtons>

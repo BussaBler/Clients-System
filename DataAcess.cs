@@ -31,7 +31,8 @@ namespace Client_System_C_
             // DDL (CREATE TABLE IF NOT EXISTS ...)
             string userTableCommand = @"
                 CREATE TABLE IF NOT EXISTS Users (
-                    phone TEXT PRIMARY KEY,
+                    internalId INTEGER PRIMARY KEY AUTOINCREMENT,
+                    phone TEXT,
                     cpf TEXT,
                     firstName TEXT,
                     lastName TEXT,
@@ -44,10 +45,10 @@ namespace Client_System_C_
             string purchaseTableCommand = @"
                 CREATE TABLE IF NOT EXISTS Purchases (
                     purchaseId INTEGER PRIMARY KEY AUTOINCREMENT,
-                    phone TEXT,
+                    userId INTEGER,
                     date TEXT,
                     total_price REAL DEFAULT 0,
-                    FOREIGN KEY (phone) REFERENCES Users(phone) ON DELETE CASCADE
+                    FOREIGN KEY (userId) REFERENCES Users(internalId) ON DELETE CASCADE
                 );
             ";
 
@@ -65,7 +66,8 @@ namespace Client_System_C_
 
             string machineTableCommand = @"
                 CREATE TABLE IF NOT EXISTS Machines (
-                    machineId TEXT PRIMARY KEY,
+                    internalId INTEGER PRIMARY KEY AUTOINCREMENT,
+                    machineId TEXT,
                     machineModel TEXT,
                     ownerName TEXT,
                     ownerPhone TEXT,
@@ -77,11 +79,11 @@ namespace Client_System_C_
                 CREATE TABLE IF NOT EXISTS Repairs (
                     repairId INTEGER PRIMARY KEY AUTOINCREMENT,
                     description TEXT,
-                    machineID TEXT,
+                    machineId INTEGER,
                     price REAL,
                     date TEXT,
                     done BOOLEAN,
-                    FOREIGN KEY (machineId) REFERENCES Machines(machineId) ON DELETE CASCADE
+                    FOREIGN KEY (machineId) REFERENCES Machines(internalId) ON DELETE CASCADE
                 );
             ";
 
@@ -136,15 +138,15 @@ namespace Client_System_C_
         /// <summary>
         /// Insert a new purchase record, returning the 'purchaseId'.
         /// </summary>
-        public static int InsertPurchase(string phone, string date)
+        public static int InsertPurchase(int userInternalId, string date)
         {
             string sql = @"
-                INSERT INTO Purchases (phone, date) VALUES (@phone, @date);
+                INSERT INTO Purchases (userId, date) VALUES (@userInternalId, @date);
                 SELECT last_insert_rowid();
             ";
 
             using var cmd = new SqliteCommand(sql, db);
-            cmd.Parameters.AddWithValue("@phone", phone);
+            cmd.Parameters.AddWithValue("@userInternalId", userInternalId);
             cmd.Parameters.AddWithValue("@date", date);
 
             object? result = cmd.ExecuteScalar();
@@ -209,7 +211,7 @@ namespace Client_System_C_
         /// <summary>
         /// Retrieves all purchases + items for a given CPF, ordered by date descending.
         /// </summary>
-        public static List<PurchaseHistory> GetPurchaseHistory(string phone)
+        public static List<PurchaseHistory> GetPurchaseHistory(int userId)
         {
             string sql = @"
                 SELECT P.purchaseId, 
@@ -221,12 +223,12 @@ namespace Client_System_C_
                        I.discount
                 FROM Purchases P
                 JOIN PurchasesItems I ON P.purchaseId = I.purchaseId
-                WHERE P.phone = @phone
+                WHERE P.userId = @userId
                 ORDER BY P.date DESC;
             ";
 
             using var cmd = new SqliteCommand(sql, db);
-            cmd.Parameters.AddWithValue("@phone", phone);
+            cmd.Parameters.AddWithValue("@userId", userId);
 
             var historyList = new List<PurchaseHistory>();
 
@@ -251,6 +253,7 @@ namespace Client_System_C_
 
         public class User
         {
+            public int InternalId { get; set; } = -1;
             public string CPF { get; set; } = string.Empty;
             public string FirstName { get; set; } = string.Empty;
             public string LastName { get; set; } = string.Empty;    
@@ -261,12 +264,47 @@ namespace Client_System_C_
             public string AdressNumber {  get; set; } = string.Empty;
             public string Neighboorhood { get; set; } = string.Empty;
             public string City { get; set; } = string.Empty;
-
         }
 
-        public static User? GetUser(string cpf)
+        public static User? GetUser(int internalId)
         {
-            string sql = "SELECT cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE cpf = @cpf LIMIT 1;";
+            string sql = "SELECT internalId, cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE internalId = @internalId LIMIT 1;";
+            using var cmd = new SqliteCommand(sql, db);
+            cmd.Parameters.AddWithValue("@internalId", internalId);
+
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                var user = new User
+                {
+                    InternalId = reader.GetInt32(0),
+                    CPF = reader.GetString(1),
+                    FirstName = reader.GetString(2),
+                    LastName = reader.GetString(3),
+                    Email = reader.GetString(4),
+                    Phone = reader.GetString(5),
+                    CEP = reader.GetString(6)
+                };
+
+                string addressData = reader.GetString(7);
+                var addressParts = addressData.Split(',');
+
+                if (addressParts.Length == 4)
+                {
+                    user.Street = addressParts[0].Trim();
+                    user.AdressNumber = addressParts[1].Trim();
+                    user.Neighboorhood = addressParts[2].Trim();
+                    user.City = addressParts[3].Trim();
+                }
+
+                return user;
+            }
+            return null;
+        }
+
+        public static User? GetUserByCpf(string cpf)
+        {
+            string sql = "SELECT internalId, cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE cpf = @cpf LIMIT 1;";
             using var cmd = new SqliteCommand(sql, db);
             cmd.Parameters.AddWithValue("@cpf", cpf);
 
@@ -275,15 +313,16 @@ namespace Client_System_C_
             {
                 var user = new User
                 {
-                    CPF = reader.GetString(0),
-                    FirstName = reader.GetString(1),
-                    LastName = reader.GetString(2),
-                    Email = reader.GetString(3),
-                    Phone = reader.GetString(4),
-                    CEP = reader.GetString(5)
+                    InternalId = reader.GetInt32(0),
+                    CPF = reader.GetString(1),
+                    FirstName = reader.GetString(2),
+                    LastName = reader.GetString(3),
+                    Email = reader.GetString(4),
+                    Phone = reader.GetString(5),
+                    CEP = reader.GetString(6)
                 };
 
-                string addressData = reader.GetString(6);
+                string addressData = reader.GetString(7);
                 var addressParts = addressData.Split(',');
 
                 if (addressParts.Length == 4)
@@ -301,7 +340,7 @@ namespace Client_System_C_
 
         public static User? GetUserByLastName(string lastName)
         {
-            string sql = @"SELECT cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE lastName = @lastName LIMIT 1;";
+            string sql = @"SELECT internalId, cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE lastName = @lastName LIMIT 1;";
             using var cmd = new SqliteCommand(sql, db);
             cmd.Parameters.AddWithValue("@lastName", lastName);
 
@@ -310,15 +349,16 @@ namespace Client_System_C_
             {
                 var user = new User
                 {
-                    CPF = reader.GetString(0),
-                    FirstName = reader.GetString(1),
-                    LastName = reader.GetString(2),
-                    Email = reader.GetString(3),
-                    Phone = reader.GetString(4),
-                    CEP = reader.GetString(5)
+                    InternalId = reader.GetInt32(0),
+                    CPF = reader.GetString(1),
+                    FirstName = reader.GetString(2),
+                    LastName = reader.GetString(3),
+                    Email = reader.GetString(4),
+                    Phone = reader.GetString(5),
+                    CEP = reader.GetString(6)
                 };
 
-                string addressData = reader.GetString(6);
+                string addressData = reader.GetString(7);
                 var addressParts = addressData.Split(',');
 
                 if (addressParts.Length == 4)
@@ -336,7 +376,7 @@ namespace Client_System_C_
 
         public static User? GetUserByPhone(string phone)
         {
-            string sql = "SELECT cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE phone = @phone LIMIT 1;";
+            string sql = "SELECT internalId, cpf, firstName, lastName, email, phone, cep, address FROM Users WHERE phone = @phone LIMIT 1;";
             using var cmd = new SqliteCommand(sql, db);
             cmd.Parameters.AddWithValue("@phone", phone);
 
@@ -345,15 +385,16 @@ namespace Client_System_C_
             {
                 var user = new User
                 {
-                    CPF = reader.GetString(0),
-                    FirstName = reader.GetString(1),
-                    LastName = reader.GetString(2),
-                    Email = reader.GetString(3),
-                    Phone = reader.GetString(4),
-                    CEP = reader.GetString(5)
+                    InternalId = reader.GetInt32(0),
+                    CPF = reader.GetString(1),
+                    FirstName = reader.GetString(2),
+                    LastName = reader.GetString(3),
+                    Email = reader.GetString(4),
+                    Phone = reader.GetString(5),
+                    CEP = reader.GetString(6)
                 };
 
-                string addressData = reader.GetString(6);
+                string addressData = reader.GetString(7);
                 var addressParts = addressData.Split(',');
 
                 if (addressParts.Length == 4)
@@ -369,11 +410,11 @@ namespace Client_System_C_
             return null;
         }
 
-        public static bool RemoveUser(string cpf)
+        public static bool RemoveUser(int internalId)
         {
-            string sql = "DELETE FROM Users WHERE cpf = @cpf;";
+            string sql = "DELETE FROM Users WHERE internalId = @internalId;";
             using var cmd = new SqliteCommand(sql, db);
-            cmd.Parameters.AddWithValue("@cpf", cpf);
+            cmd.Parameters.AddWithValue("@internalId", internalId);
 
             int rowsAffected = cmd.ExecuteNonQuery();
             return rowsAffected > 0;
@@ -381,7 +422,7 @@ namespace Client_System_C_
 
         public static List<User> GetAllUsers()
         {
-            string sql = "SELECT cpf, firstName, lastName, email, phone FROM Users ORDER BY firstName, lastName;";
+            string sql = "SELECT internalId, cpf, firstName, lastName, email, phone FROM Users ORDER BY firstName, lastName;";
 
             using var cmd = new SqliteCommand(sql, db);
             var users = new List<User>();
@@ -391,24 +432,26 @@ namespace Client_System_C_
             {
                 users.Add(new User
                 {
-                    CPF = reader.GetString(0),
-                    FirstName = reader.GetString(1),
-                    LastName = reader.GetString(2),
-                    Email = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
-                    Phone = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                    InternalId = reader.GetInt32(0),
+                    CPF = reader.GetString(1),
+                    FirstName = reader.GetString(2),
+                    LastName = reader.GetString(3),
+                    Email = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                    Phone = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
                 });
             }
             return users;
         }
 
-        public static void UpdateUser(string id, string firstName, string lastName, string email, string phone)
+        public static void UpdateUser(int internalId, string firstName, string lastName, string email, string phone)
         {
             string sql = @"
                 UPDATE Users 
                 SET firstName = @firstName, 
                     lastName = @lastName, 
-                    email = @email 
-                WHERE phone = @phone;
+                    email = @email,
+                    phone = @phone
+                WHERE internalId = @internalId;
             ";
 
             using var cmd = new SqliteCommand(sql, db);
@@ -416,6 +459,7 @@ namespace Client_System_C_
             cmd.Parameters.AddWithValue("@lastName", lastName);
             cmd.Parameters.AddWithValue("@email", string.IsNullOrWhiteSpace(email) ? string.Empty : email);
             cmd.Parameters.AddWithValue("@phone", phone);
+            cmd.Parameters.AddWithValue("@internalId", internalId);
 
             cmd.ExecuteNonQuery();
         }
@@ -437,16 +481,16 @@ namespace Client_System_C_
             cmd.ExecuteNonQuery();
         }
 
-        public static int InsertRepair(string machineId, string descripition, double price, string date)
+        public static int InsertRepair(int machineInternalId, string descripition, double price, string date)
         {
             string sql = @"
                 INSERT INTO Repairs (machineId, description, price, date, done) 
-                VALUES (@machineId, @description, @price, @date, @done);
+                VALUES (@machineInternalId, @description, @price, @date, @done);
                 SELECT last_insert_rowid();
             ";
 
             using var cmd = new SqliteCommand(sql, db);
-            cmd.Parameters.AddWithValue("@machineId", machineId);
+            cmd.Parameters.AddWithValue("@machineInternalId", machineInternalId);
             cmd.Parameters.AddWithValue("@description", descripition);
             cmd.Parameters.AddWithValue("@price", price);
             cmd.Parameters.AddWithValue("@date", date);
@@ -458,6 +502,7 @@ namespace Client_System_C_
 
         public class Machine
         {
+            public int InternalId { get; set; } = -1;
             public string MachineId { get; set; } = string.Empty;
             public string MachineModel { get; set; } = string.Empty;
             public string OwnerName { get; set; } = string.Empty;
@@ -475,9 +520,30 @@ namespace Client_System_C_
             public bool Done { get; set; } = false;
         }
 
-        public static Machine? GetMachine(string machineId)
+        public static Machine? GetMachine(int internalId)
         {
-            string sql = "SELECT machineId, machineModel, ownerName, ownerPhone, ownerPhone2 FROM Machines WHERE machineId = @machineId LIMIT 1;";
+            string sql = "SELECT internalId, machineId, machineModel, ownerName, ownerPhone, ownerPhone2 FROM Machines WHERE internalId = @internalId LIMIT 1;";
+            using var cmd = new SqliteCommand(sql, db);
+            cmd.Parameters.AddWithValue("@internalId", internalId);
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return new Machine
+                {
+                    InternalId = reader.GetInt32(0),
+                    MachineId = reader.GetString(1),
+                    MachineModel = reader.GetString(2),
+                    OwnerName = reader.GetString(3),
+                    OwnerPhone = reader.GetString(4),
+                    OwnerPhone2 = reader.GetString(5)
+                };
+            }
+            return null;
+        }
+
+        public static Machine? GetMachineById(string machineId)
+        {
+            string sql = "SELECT internalId, machineId, machineModel, ownerName, ownerPhone, ownerPhone2 FROM Machines WHERE machineId = @machineId LIMIT 1;";
             using var cmd = new SqliteCommand(sql, db);
             cmd.Parameters.AddWithValue("@machineId", machineId);
 
@@ -486,22 +552,23 @@ namespace Client_System_C_
             {
                 return new Machine
                 {
-                    MachineId = reader.GetString(0),
-                    MachineModel = reader.GetString(1),
-                    OwnerName = reader.GetString(2),
-                    OwnerPhone = reader.GetString(3),
-                    OwnerPhone2 = reader.GetString(4)
+                    InternalId = reader.GetInt32(0),
+                    MachineId = reader.GetString(1),
+                    MachineModel = reader.GetString(2),
+                    OwnerName = reader.GetString(3),
+                    OwnerPhone = reader.GetString(4),
+                    OwnerPhone2 = reader.GetString(5)
                 };
             }
             return null;
         }
 
-        public static List<Repair> GetRepairsFromMachine(string machineId)
+        public static List<Repair> GetRepairsFromMachine(int machineInternalId)
         {
-            string sql = "SELECT repairId, machineId, description, price, date, done FROM Repairs WHERE machineId = @machineId ORDER BY date DESC;";
+            string sql = "SELECT repairId, machineId, description, price, date, done FROM Repairs WHERE machineId = @machineInternalId ORDER BY date DESC;";
 
             using var cmd = new SqliteCommand(sql, db);
-            cmd.Parameters.AddWithValue("@machineId", machineId);
+            cmd.Parameters.AddWithValue("@machineInternalId", machineInternalId);
 
             var repairList = new List<Repair>();
 
@@ -521,19 +588,19 @@ namespace Client_System_C_
             return repairList;
         }
 
-        public static void UpdateMachine(string machineId, string machineModel, string ownerName, string ownerPhone, string ownerPhone2)
+        public static void UpdateMachine(int internalId, string machineModel, string ownerName, string ownerPhone, string ownerPhone2)
         {
             string sql = @"
-                UPDATE Users 
+                UPDATE Machines 
                 SET machineModel = @machineModel, 
                     ownerName = @ownerName, 
                     ownerPhone = @ownerPhone, 
                     ownerPhone2 = @ownerPhone2 
-                WHERE machineId = @machineId;
+                WHERE internalId = @internalId;
             ";
 
             using var cmd = new SqliteCommand(sql, db);
-            cmd.Parameters.AddWithValue("@machineId", machineId);
+            cmd.Parameters.AddWithValue("@internalId", internalId);
             cmd.Parameters.AddWithValue("@machineModel", machineModel);
             cmd.Parameters.AddWithValue("@ownerName", ownerName);
             cmd.Parameters.AddWithValue("@ownerPhone", ownerPhone);
@@ -545,7 +612,7 @@ namespace Client_System_C_
         public static List<Machine> GetAllMachines()
         {
             string sql = @"
-                SELECT machineId, machineModel, ownerName, ownerPhone, ownerPhone2 
+                SELECT internalId, machineId, machineModel, ownerName, ownerPhone, ownerPhone2 
                 FROM Machines
                 ORDER BY machineModel;
             ";
@@ -558,26 +625,27 @@ namespace Client_System_C_
             {
                 machines.Add(new Machine
                 {
-                    MachineId = reader.GetString(0),
-                    MachineModel = reader.GetString(1),
-                    OwnerName = reader.GetString(2),
-                    OwnerPhone = reader.GetString(3),
-                    OwnerPhone2 = reader.GetString(4)
+                    InternalId = reader.GetInt32(0),
+                    MachineId = reader.GetString(1),
+                    MachineModel = reader.GetString(2),
+                    OwnerName = reader.GetString(3),
+                    OwnerPhone = reader.GetString(4),
+                    OwnerPhone2 = reader.GetString(5)
                 });
             }
             return machines;
         }
 
-        public static void RemoveMachine(string machineId)
+        public static void RemoveMachine(int internalId)
         {
-            string sql = "DELETE FROM Machines WHERE machineId = @machineId;";
+            string sql = "DELETE FROM Machines WHERE internalId = @internalId;";
 
             using var cmd = new SqliteCommand(sql, db);
-            cmd.Parameters.AddWithValue("@machineId", machineId);
+            cmd.Parameters.AddWithValue("@internalId", internalId);
             cmd.ExecuteNonQuery();
         }
 
-        public static void UpdateRepair(string repairId, string description, bool done)
+        public static void UpdateRepair(int repairId, string description, bool done)
         {
             string sql = @"
                 UPDATE Repairs
@@ -592,8 +660,6 @@ namespace Client_System_C_
 
             cmd.ExecuteNonQuery();
         }
-
-
 
         /// <summary>
         /// (Optional) Closes the static db connection. Call this when the app is shutting down.

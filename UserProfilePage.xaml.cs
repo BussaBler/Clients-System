@@ -10,9 +10,9 @@ namespace Client_System_C_
 {
     public sealed partial class UserProfilePage : Page
     {
-        private string currentId = string.Empty;
+        private int currentInternalId;
         private CalendarDatePicker calendarDate;
-        private List<ItemEntry> currentItems = [];
+        private readonly List<ItemEntry> currentItems = [];
 
         public UserProfilePage()
         {
@@ -22,37 +22,18 @@ namespace Client_System_C_
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter is string id)
+            if (e.Parameter is string cpf)
             {
-                LoadUserProfile(id);
+                LoadUserProfile(cpf);
             }
         }
 
-        private static DataAcess.User? TryGetUser(string id)
+        private void LoadUserProfile(int internalId)
         {
-            DataAcess.User? user;
-            
-            user = DataAcess.GetUser(id);
-            if (user != null)
-            {
-                return user;
-            }
-
-            user = DataAcess.GetUserByPhone(id);
-            if (user != null)
-            {
-                return user;
-            }
-
-            return null;
-        }
-
-        private void LoadUserProfile(string id)
-        {
-            var user = TryGetUser(id);
+            var user = DataAcess.GetUser(internalId);
             if (user == null) return;
 
-            currentId = user.Phone;
+            currentInternalId = internalId;
             userHeader.Text = $"{user.FirstName} {user.LastName} (CPF/CNPJ: {user.CPF})";
 
             var userInfoText = new List<string>();
@@ -70,13 +51,49 @@ namespace Client_System_C_
             userInfo.Text = userInfoText.Count > 0 ? string.Join("\n", userInfoText) : "Sem informações adicionais.";
             userInfo.LineHeight += 1;
 
-            LoadPurchaseHistory(user.Phone);
+            LoadPurchaseHistory(currentInternalId);
         }
 
-        private void LoadPurchaseHistory(string id)
+        private static DataAcess.User? TryGetUser(string phoneOrCpf)
+        {
+            var user = DataAcess.GetUserByPhone(phoneOrCpf);
+            if (user == null)
+            {
+                user = DataAcess.GetUserByCpf(phoneOrCpf);
+            }
+            return user;
+        }
+
+        private void LoadUserProfile(string phoneOrCpf)
+        {
+            var user = TryGetUser(phoneOrCpf);
+            if (user == null) return;
+
+            currentInternalId = user.InternalId;
+            userHeader.Text = $"{user.FirstName} {user.LastName} (CPF/CNPJ: {user.CPF})";
+
+            var userInfoText = new List<string>();
+            if (!string.IsNullOrEmpty(user.Email)) userInfoText.Add($"Email: {user.Email}");
+            if (!string.IsNullOrEmpty(user.Phone)) userInfoText.Add($"Celular/Telefone: {user.Phone}");
+
+            var addressInfo = new List<string>();
+            if (!string.IsNullOrEmpty(user.Street)) addressInfo.Add($"Rua: {user.Street}");
+            if (!string.IsNullOrEmpty(user.AdressNumber)) addressInfo.Add($"Número: {user.AdressNumber}");
+            if (!string.IsNullOrEmpty(user.Neighboorhood)) addressInfo.Add($"Bairro: {user.Neighboorhood}");
+            if (!string.IsNullOrEmpty(user.City)) addressInfo.Add($"Cidade: {user.City}");
+
+            if (addressInfo.Count > 0) userInfoText.Add(string.Join(" | ", addressInfo));
+
+            userInfo.Text = userInfoText.Count > 0 ? string.Join("\n", userInfoText) : "Sem informações adicionais.";
+            userInfo.LineHeight += 1;
+
+            LoadPurchaseHistory(currentInternalId);
+        }
+
+        private void LoadPurchaseHistory(int internalId)
         {
             purchaseListPanel.Children.Clear();
-            var history = DataAcess.GetPurchaseHistory(id);
+            var history = DataAcess.GetPurchaseHistory(internalId);
 
             if (history.Count == 0)
             {
@@ -132,7 +149,7 @@ namespace Client_System_C_
             if (result == ContentDialogResult.Primary)
             {
                 DateTimeOffset dateTimeOffset = calendarDate.Date.GetValueOrDefault(DateTimeOffset.MinValue);
-                int purchaseId = DataAcess.InsertPurchase(currentId, dateTimeOffset.Date.ToShortDateString());
+                int purchaseId = DataAcess.InsertPurchase(currentInternalId, dateTimeOffset.Date.ToShortDateString());
 
                 foreach (var item in currentItems)
                 {
@@ -143,7 +160,7 @@ namespace Client_System_C_
                 }
 
                 DataAcess.UpdateTotalPrice(purchaseId);
-                LoadPurchaseHistory(currentId);
+                LoadPurchaseHistory(currentInternalId);
             }
         }
 
@@ -208,7 +225,7 @@ namespace Client_System_C_
 
         private async void EditProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            var user = DataAcess.GetUserByPhone(currentId);
+            var user = DataAcess.GetUser(currentInternalId);
             if (user == null) return;
 
             var firstNameBox = new TextBox { PlaceholderText = "Nome", Text = user.FirstName };
@@ -239,9 +256,8 @@ namespace Client_System_C_
 
             if (result == ContentDialogResult.Primary)
             {
-                DataAcess.UpdateUser(currentId, firstNameBox.Text, lastNameBox.Text, emailBox.Text, currentId);
-
-                LoadUserProfile(currentId);
+                DataAcess.UpdateUser(currentInternalId, firstNameBox.Text, lastNameBox.Text, emailBox.Text, phoneBox.Text);
+                LoadUserProfile(currentInternalId);
             }
         }
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
