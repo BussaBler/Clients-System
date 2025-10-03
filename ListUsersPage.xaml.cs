@@ -40,7 +40,7 @@ namespace Client_System_C_
                 return;
             }
 
-            var sortedUsers = users.OrderBy(u => u.FirstName).ThenBy(u => u.LastName);
+            var sortedUsers = users.OrderBy(u => u.IdName).ThenBy(u => u.ContactName);
 
             foreach (var user in sortedUsers)
             {
@@ -64,13 +64,13 @@ namespace Client_System_C_
 
                 contentPanel.Children.Add(new TextBlock
                 {
-                    Text = $"{user.FirstName} {user.LastName}",
+                    Text = $"{user.IdName}",
                     FontSize = 20,
                     FontWeight = FontWeights.Bold,
                     Foreground = new SolidColorBrush(Colors.Black),
                 });
 
-                var details = new List<string> { $"CPF/CNPJ: {user.CPF}" };
+                var details = new List<string> { $"CPF/CNPJ: {user.CPF}", $"Nome para Contato: {user.ContactName}" };
                 if (!string.IsNullOrEmpty(user.Email)) details.Add($"Email: {user.Email}");
                 if (!string.IsNullOrEmpty(user.Phone)) details.Add($"Celular/Telefone: {user.Phone}");
 

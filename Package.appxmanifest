@@ -10,7 +10,7 @@
   <Identity
     Name="4eb57e02-ff84-4146-98f3-bdfe38afa873"
     Publisher="CN=Bussab"
-    Version="1.1.2.0" />
+    Version="1.1.5.0" />
 
   <mp:PhoneIdentity PhoneProductId="4eb57e02-ff84-4146-98f3-bdfe38afa873" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

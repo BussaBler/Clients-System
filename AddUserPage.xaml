@@ -19,8 +19,8 @@
             </RadioButtons>
             <TextBox x:Name="cpfBox" Margin="0, 5, 0, 12" ui:TextBoxExtensions.Mask="999.999.999-99"/>
             <TextBox x:Name="cnpjBox" Margin="0, 5, 0, 12" ui:TextBoxExtensions.Mask="99.999.999/9999-99" Visibility="Collapsed"/>
-            <TextBox x:Name="firstNameBox" Margin="0, 5, 0, 12" Header="Nome"/>
-            <TextBox x:Name="lastNameBox" Margin="0, 5, 0, 12" Header="Sobrenome"/>
+            <TextBox x:Name="firstNameBox" Margin="0, 5, 0, 12" Header="Nome/Razão Social"/>
+            <TextBox x:Name="lastNameBox" Margin="0, 5, 0, 12" Header="Nome para Contato"/>
             <TextBox x:Name="emailBox" Margin="0, 5, 0, 12" Header="Email" ui:TextBoxExtensions.Regex="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$"/>
             <RadioButtons x:Name="phoneTypeRadioButtons" SelectionChanged="PhoneRadioButtons_SelectionChanged" SelectedIndex="0">
                 <RadioButton Content="Celular" IsChecked="True"/>

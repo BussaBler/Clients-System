@@ -24,7 +24,7 @@
                 />
             <AppBarButton Icon="Print" Click="PrintProfileButton_Click"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Margin="0,50,10,0" ToolTipService.ToolTip="Editar Perfil"
+                    Margin="0,50,10,0" ToolTipService.ToolTip="Imprimir Perfil"
                     Width="75" Height="50"
                 />
         </Grid>

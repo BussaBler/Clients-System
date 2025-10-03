@@ -15,7 +15,7 @@
 
         <!-- Text fields for user inputs -->
         <TextBox x:Name="cellPhoneBox" Header="Celular" PlaceholderText="Digite o celular" Margin="0,10,0,5" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
-        <TextBox x:Name="phoneBox" Header="Telefone" PlaceholderText="Digite o telefone" Margin="0,10,0,5" ui:TextBoxExtensions.Mask="(99) 99999-9999"/>
+        <TextBox x:Name="phoneBox" Header="Telefone" PlaceholderText="Digite o telefone" Margin="0,10,0,5" ui:TextBoxExtensions.Mask="(99) 9999-9999"/>
         <TextBox x:Name="budgetDeadlineBox" Header="Prazo de Orçamento" PlaceholderText="Digite o prazo" Margin="0,10,0,10"/>
 
         <!-- Save Button -->

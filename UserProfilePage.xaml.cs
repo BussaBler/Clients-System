@@ -34,9 +34,9 @@ namespace Client_System_C_
             if (user == null) return;
 
             currentInternalId = internalId;
-            userHeader.Text = $"{user.FirstName} {user.LastName} (CPF/CNPJ: {user.CPF})";
+            userHeader.Text = $"{user.IdName} (CPF/CNPJ: {user.CPF})";
 
-            var userInfoText = new List<string>();
+            var userInfoText = new List<string> {$"Nome para Contato: {user.ContactName}"};
             if (!string.IsNullOrEmpty(user.Email)) userInfoText.Add($"Email: {user.Email}");
             if (!string.IsNullOrEmpty(user.Phone)) userInfoText.Add($"Celular/Telefone: {user.Phone}");
 
@@ -70,9 +70,9 @@ namespace Client_System_C_
             if (user == null) return;
 
             currentInternalId = user.InternalId;
-            userHeader.Text = $"{user.FirstName} {user.LastName} (CPF/CNPJ: {user.CPF})";
+            userHeader.Text = $"{user.IdName} (CPF/CNPJ: {user.CPF})";
 
-            var userInfoText = new List<string>();
+            var userInfoText = new List<string>() {$"Nome para Contato: {user.ContactName}"};
             if (!string.IsNullOrEmpty(user.Email)) userInfoText.Add($"Email: {user.Email}");
             if (!string.IsNullOrEmpty(user.Phone)) userInfoText.Add($"Celular/Telefone: {user.Phone}");
 
@@ -228,8 +228,8 @@ namespace Client_System_C_
             var user = DataAcess.GetUser(currentInternalId);
             if (user == null) return;
 
-            var firstNameBox = new TextBox { PlaceholderText = "Nome", Text = user.FirstName };
-            var lastNameBox = new TextBox { PlaceholderText = "Sobrenome", Text = user.LastName };
+            var firstNameBox = new TextBox { PlaceholderText = "Nome", Text = user.IdName };
+            var lastNameBox = new TextBox { PlaceholderText = "Sobrenome", Text = user.ContactName };
             var emailBox = new TextBox { PlaceholderText = "Email", Text = user.Email };
             var phoneBox = new TextBox { PlaceholderText = "Celular/Telefone", Text = user.Phone };
 

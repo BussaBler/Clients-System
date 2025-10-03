@@ -59,10 +59,7 @@ namespace Client_System_C_
             {
                 user = DataAcess.GetUserByCpf(maskedCpf);
             }
-            else if (!string.IsNullOrEmpty(userLastName.Text.Trim()))
-            {
-                user = DataAcess.GetUserByLastName(userLastName.Text.Trim());
-            } else if (!string.IsNullOrEmpty(phone))
+            else if (!string.IsNullOrEmpty(phone))
             {
                 user = DataAcess.GetUserByPhone(phone);
             }
